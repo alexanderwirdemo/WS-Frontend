@@ -1,13 +1,108 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <title>WSFrontend</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="utf-8">
+    <title>WSFrontend</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
+
 <body>
-  <app-root></app-root>
-</body>
+
+    <!-- Angular App Root-->
+    <app-root></app-root>
+
+    <!-- Lidiyas code -->
+    <form class="myForm" method="get" enctype="application/x-www-form-urlencoded" action="">
+
+        <p>
+            <label>Kurskod
+                <select id="select-course" name="course">
+                    <option value="" selected="selected">Välj</option>
+                </select>
+            </label>
+        </p>
+        <script>
+            loadCourses()
+        </script>
+
+        <p>
+            <label>Modul i Ladok
+                <select id="pickup_place" name="pickup_place">
+                    <option value="" selected="selected">Välj</option>
+                    <option value="Inlamning">Inlamning</option>
+                    <option value="Tentamen">Tentamen</option>
+                </select>
+            </label>
+        </p>
+
+    </form>
+
+    <table width="1200px">
+        <tr>
+            <td width="200px"></td>
+            <td width="200px"></td>
+            <td width="200px"></td>
+            <td width="200px"></td>
+            <td width="200px"></td>
+            <td width="200px"></td>
+        </tr>
+        <tr>
+            <td>StudentID</td>
+            <td>Omdome i Canvas</td>
+            <td>Examinationsdatum</td>
+            <td>Betyg i Ladok</td>
+            <td>Status</td>
+            <td>Information</td>
+        </tr>
+        <tr>
+            <td>lenand-20</td>
+            <td>U</td>
+            <td>2021-01-07</td>
+            <td>U</td>
+            <td>Inte_Attesterad</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>linman-85</td>
+            <td>VG</td>
+            <td>2020-03-21</td>
+            <td>VG</td>
+            <td>Attesterad</td>
+            <td></td>
+            <tr>
+                <td>
+                    <div>
+                        <input type="checkbox" id="studentID" name="studentID">
+                        <label for="studentID">StudentID</label>
+                    </div>
+                </td>
+                <td>G</td>
+                <td>
+                    <p>
+                        <label>
+                        <input type="datetime-local" name="pickup_time" required>
+                    </label>
+                    </p>
+                </td>
+                <td>
+                    <label>
+                    <select id="" name="">
+                        <option value="" selected="selected">Välj</option>
+                        <option value="U">U</option>
+                        <option value="G">G</option>
+                        <option value="VG">VG</option>
+                    </select>
+                </label>
+                </td>
+                <td>Utkast</td>
+            </tr>
+
+    </table>
+
+    <button class="button button2">Cancel</button>
+    <button class="button button1">Confirm</button>
+
 </html>
