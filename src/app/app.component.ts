@@ -9,6 +9,7 @@ import { ApiService } from 'src/services/api.service';
 })
 export class AppComponent {
   title = 'WS-Frontend';
+
   searchModuleForm;
   selectedModuleForm;
   selectedModule: string;
@@ -17,6 +18,7 @@ export class AppComponent {
   selectedCourseCode: string;
   _selectedStudents: Array<Student>;
   _resultsToDisplay: Array<Studyresult>;
+  _examDate: any;
 
   constructor
   (
@@ -52,26 +54,22 @@ public set selectedStudents(students: Array<Student>) {
     let courseCode = this.selectedCourseCode;
     let module = this.selectedModule;
 
-    //let registeredStudents = [];
-
     let students: Student[] = [];
 
     let results = [];
     
-    //this._api.getTypeRequest('ladok/api/students/'+courseCode+'/'+module).subscribe(async (res:any)=>{
       let registeredStudents: any = await this._api.getTypeRequest('ladok/api/students/'+courseCode+'/'+module).toPromise();
-      //registeredStudents = res;
       console.dir(registeredStudents);
 
       for(let index=0; index<registeredStudents.length; index++){
         let studentID = registeredStudents[index];
         let student: any = await this._api.getTypeRequest('studentITS/api/students/'+studentID).toPromise();
-        
+
+          console.dir(student);
           let name = student.namn;
           let civicNo = student.personnummer;
           let studentId = student.studentID;
           let newStudent = new Student(name, civicNo, studentId);
-          //console.dir(newStudent);
           students.push(newStudent);
           console.dir(students);
       }
@@ -80,21 +78,29 @@ public set selectedStudents(students: Array<Student>) {
       this._selectedStudents = students;
 
       console.dir(this._selectedStudents);
-      //results = this.getResults(this._selectedStudents);
       for(let index=0; index<this._selectedStudents.length; index++){
         let studentCivicNo = this._selectedStudents[index].personnummer;
         console.log('civic: ', studentCivicNo);
         let res: any = await this._api.getTypeRequest('ladok/api/results/'+studentCivicNo).toPromise();
-        //this._api.getTypeRequest('ladok/api/results/'+studentCivicNo).subscribe((res:any)=>{
           console.dir(res);
-          //results = res;
-          let name = this._selectedStudents[index].namn;
-          let civicNo = this._selectedStudents[index].personnummer;
-          let courseCode = this.selectedCourseCode;
-          let module = this.selectedModule;
-          let resultCanvas = "TBA";
-          let newStudyResult = new Studyresult(name, civicNo, courseCode, module, resultCanvas);
-          results.push(newStudyResult);
+          for(let resultIndex=0; resultIndex<res.length; resultIndex++){
+            console.log(res[resultIndex].kurskod,  this.selectedCourseCode);
+            if(res[resultIndex].kurskod === this.selectedCourseCode) {
+              console.log(res[resultIndex].betyg_canvas[this.selectedModule]);
+              let name = this._selectedStudents[index].namn;
+              let civicNo = this._selectedStudents[index].personnummer;
+              let courseCode = this.selectedCourseCode;
+              let module = this.selectedModule;
+              let resultCanvas = res[resultIndex].betyg_canvas[this.selectedModule];
+              let resultLadok = res[resultIndex].betyg_ladok[0].resultat;
+              let examDate = res[resultIndex].betyg_ladok[0].examinationsdatum;
+              let status = res[resultIndex].status;
+              let information = res[resultIndex].information;
+              let newStudyResult = new Studyresult(name, civicNo, courseCode, module, resultCanvas, resultLadok, examDate, status, information);
+              results.push(newStudyResult);
+            }
+          }
+          
       }
       this._resultsToDisplay = results;
       console.dir(this._resultsToDisplay);
@@ -106,26 +112,12 @@ public set selectedStudents(students: Array<Student>) {
     for(let index=0; index<registeredStudents.length; index++){
       let studentID = registeredStudents[index];
       let student: any = await this._api.getTypeRequest('studentITS/api/students/'+studentID).toPromise();
-      //this._api.getTypeRequest('studentITS/api/students/'+studentID).subscribe((res:any)=>{   
-        //let student = res;
-        //console.dir(student);
         let name = student.namn;
         let civicNo = student.personnummer;
         let studentId = student.studentID;
         let newStudent = new Student(name, civicNo, studentId);
-        //console.dir(newStudent);
         students.push(newStudent);
         console.dir(students);
-        /*
-        if(index===registeredStudents.length-1){
-          this._selectedStudents = students;
-          console.dir(this._selectedStudents);
-          return this._selectedStudents;
-        }*/
-        /*
-      }, err => {
-        console.log(err);
-      });*/
     }
     this._selectedStudents = students;
     console.dir(this._selectedStudents);
@@ -141,16 +133,12 @@ public set selectedStudents(students: Array<Student>) {
       let studentCivicNo = students[index].personnummer;
       console.log('civic: ', studentCivicNo);
       let res: any = await this._api.getTypeRequest('ladok/api/results/'+studentCivicNo).toPromise();
-      //this._api.getTypeRequest('ladok/api/results/'+studentCivicNo).subscribe((res:any)=>{
         console.dir(res);
-        //results = res;
         let name = students[index].namn;
         let civicNo = students[index].personnummer;
         let courseCode = this.selectedCourseCode;
         let module = this.selectedModule;
         let resultCanvas = "TBA";
-        let newStudyResult = new Studyresult(name, civicNo, courseCode, module, resultCanvas);
-        results.push(newStudyResult);
     }
     return results;
   }
@@ -180,6 +168,17 @@ public set selectedStudents(students: Array<Student>) {
     this.options = newOptions;
   }
 
+  addResult(result: Studyresult){
+    result.examinationsdatum = (<HTMLInputElement>document.getElementById("time")).value;
+    result.resultLadok = (<HTMLInputElement>document.getElementById("grade")).value;
+    console.dir(result);
+    this._api.putTypeRequest('ladok/api/add/results', result).subscribe((res:any)=>{
+      console.dir(res);
+    }, err => {
+      console.log(err);
+    });
+  }
+
 }
 
 export class Student{
@@ -206,12 +205,16 @@ export class Studyresult{
   public status: String;
   public information: String;
 
-  constructor(namn: String, personnummer: String, kurskod: String, modul: String, resultCanvas: String){
+  constructor(namn: String, personnummer: String, kurskod: String, modul: String, resultCanvas: String, resultLadok: String, examinationsdatum: String, status: String, information: String){
     this.namn = namn;
     this.personnummer = personnummer;
     this.kurskod = kurskod;
     this.modul = modul;
     this.resultCanvas = resultCanvas;
+    this.resultLadok = resultLadok;
+    this.examinationsdatum = examinationsdatum;
+    this.status = status;
+    this.information = information;
   }
 
 }

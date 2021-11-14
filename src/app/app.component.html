@@ -24,13 +24,38 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let result of _resultsToDisplay">           
-      <td>{{result['namn']}}</td>
-      <td>{{result['resultCanvas']}}</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+    <tr *ngFor="let result of _resultsToDisplay" >
+        <td>{{result['namn']}}</td>
+        <td>{{result['resultCanvas']}}</td>
+        <td>
+          <div *ngIf="(result['status']==='Attesterad'); else elseBlock">
+            {{result['examinationsdatum']}}
+          </div>
+        <ng-template #elseBlock>
+          <input type="date" name="time" id="time" value="_examDate">
+        </ng-template>
+            
+
+        </td>
+      
+        <td>
+          <div *ngIf="(result['status']==='Attesterad'); else elseBlock">
+            {{result['resultLadok']}}
+          </div>
+        <ng-template #elseBlock>
+          <select id="grade" name="">
+            <option value="" selected="selected">Välj</option>
+            <option value="U">U</option>
+            <option value="G">G</option>
+            <option value="VG">VG</option>
+          </select>
+        </ng-template>
+
+
+    </td>
+        <td>{{result['status']}}</td>
+        <td>{{result['information']}}</td>
+        <td><button class="button button1" (click)="addResult(result)">Confirm</button></td>      
     </tr>
   </tbody>
 </table>
