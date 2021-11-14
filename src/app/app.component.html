@@ -28,10 +28,10 @@
         <td>{{result['namn']}}</td>
         <td>{{result['resultCanvas']}}</td>
         <td>
-          <div *ngIf="(result['status']==='Attesterad'); else elseBlock">
+          <div *ngIf="(result['status']==='Attesterad'); else elseBlock1">
             {{result['examinationsdatum']}}
           </div>
-        <ng-template #elseBlock>
+        <ng-template #elseBlock1>
           <input type="date" name="time" id="time" value="_examDate">
         </ng-template>
             
@@ -39,10 +39,10 @@
         </td>
       
         <td>
-          <div *ngIf="(result['status']==='Attesterad'); else elseBlock">
+          <div *ngIf="(result['status']==='Attesterad'); else elseBlock2">
             {{result['resultLadok']}}
           </div>
-        <ng-template #elseBlock>
+        <ng-template #elseBlock2>
           <select id="grade" name="">
             <option value="" selected="selected">Välj</option>
             <option value="U">U</option>
